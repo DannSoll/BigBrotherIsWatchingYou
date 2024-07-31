@@ -1,0 +1,16 @@
+# Created by: Dann_Soll
+# A commands moderation plugin
+# The plugin aimed to solve player-trust problems
+
+# Discord Webhook URL
+webhook-url: "YOUR_DISCORD_WEBHOOK_URL"
+
+# Specific list of commands to detect
+commands:
+  - "say"
+  - "time set"
+
+# Specific list of players to monitor
+players:
+  - "Dann_Soll"
+  - "ikeepka1m"

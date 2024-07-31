@@ -3,9 +3,6 @@ package dev.ua.Dann_Soll.bigBrotherIsWatchingYou;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -16,13 +13,17 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public final class BigBrotherIsWatchingYou extends JavaPlugin implements Listener {
 
-    private static final String WEBHOOK_URL = "https://discord.com/api/webhooks/1268271972782047384/2_2cnXYGs4ml0q8RDzNB6pdAAdqR5qauGVccRgwY87NLZRSwpmDlDLgr_9z7ESjk8cxI";
+    private String webhookUrl;
+    private List<String> detectedCommands;
+    private List<String> monitoredPlayers;
 
     @Override
     public void onEnable() {
+        loadConfig();
         Bukkit.getPluginManager().registerEvents(this, this);
         getLogger().info("Big Brother Is Watching You!");
     }
@@ -32,24 +33,44 @@ public final class BigBrotherIsWatchingYou extends JavaPlugin implements Listene
         getLogger().info("Big Brother Is On Vacation!");
     }
 
+    public void loadConfig() {
+        this.saveDefaultConfig();
+        webhookUrl = this.getConfig().getString("webhook-url");
+        detectedCommands = this.getConfig().getStringList("commands");
+        monitoredPlayers = this.getConfig().getStringList("players");
+
+        // Check if the webhook URL is set
+        if (webhookUrl == null || webhookUrl.isEmpty()) {
+            getLogger().warning("Discord Webhook URL is not set in config.yml!");
+            getServer().getPluginManager().disablePlugin(this);
+        }
+    }
+
     @EventHandler
     public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
         String playerName = event.getPlayer().getName();
-        String command = event.getMessage();
-        String message = playerName + " issued server command: " + command;
-        sendDiscordMessage(message);
+        String command = event.getMessage().split(" ")[0].substring(1); // Remove leading '/'
+
+        if (monitoredPlayers.contains(playerName) && detectedCommands.contains(command)) {
+            String message = playerName + " issued command: " + event.getMessage();
+            sendDiscordMessageAsync(message);
+        }
     }
 
     @EventHandler
     public void onConsoleCommand(ServerCommandEvent event) {
         String command = event.getCommand();
         String message = "Console issued server command: " + command;
-        sendDiscordMessage(message);
+        sendDiscordMessageAsync(message);
+    }
+
+    private void sendDiscordMessageAsync(String messageContent) {
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> sendDiscordMessage(messageContent));
     }
 
     private void sendDiscordMessage(String messageContent) {
         try {
-            URL url = new URL(WEBHOOK_URL);
+            URL url = new URL(webhookUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json; utf-8");
