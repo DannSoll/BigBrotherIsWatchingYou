@@ -5,12 +5,25 @@
 # Discord Webhook URL
 webhook-url: "YOUR_DISCORD_WEBHOOK_URL"
 
-# Specific list of commands to detect
+# Specific list of ignored commands to detect
 commands:
+  - "login"
+  - "l"
+  - "register"
+  - "r"
   - "say"
-  - "time set"
+  - "msg"
+  - "changepassword"
+  - "tell"
+  - "bmpc"
+  - "gamemode"
+  - "bigbro"
+  - "bigbrother"
 
 # Specific list of players to monitor
 players:
   - "Dann_Soll"
-  - "ikeepka1m"
+  - "ikeepkaIm"
+  - "FyZzZen"
+  - "vifoke"
+  - "vifokeNOTzero4"
