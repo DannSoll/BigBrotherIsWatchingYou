@@ -27,7 +27,6 @@ public final class BigBrotherIsWatchingYou extends JavaPlugin implements Listene
     private String webhookUrl;
     private List<String> detectedCommands;
     private List<String> monitoredPlayers;
-    private Set<Player> creativePlayers = new HashSet<>();
 
     @Override
     public void onEnable() {
