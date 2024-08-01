@@ -1,4 +1,4 @@
-package dev.ua.Dann_Soll.bigBrotherIsWatchingYou;
+rpackage dev.ua.Dann_Soll.bigBrotherIsWatchingYou;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -52,7 +52,7 @@ public final class BigBrotherIsWatchingYou extends JavaPlugin implements Listene
         String command = event.getMessage().split(" ")[0].substring(1); // Remove leading '/'
 
         if (monitoredPlayers.contains(playerName) && detectedCommands.contains(command)) {
-            String message = playerName + " issued command: " + event.getMessage();
+            String message = playerName + " issued server command: " + event.getMessage();
             sendDiscordMessageAsync(message);
         }
     }
