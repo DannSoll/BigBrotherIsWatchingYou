@@ -1,4 +1,4 @@
-rpackage dev.ua.Dann_Soll.bigBrotherIsWatchingYou;
+package dev.ua.Dann_Soll.bigBrotherIsWatchingYou;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
