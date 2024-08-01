@@ -3,23 +3,31 @@ package dev.ua.Dann_Soll.bigBrotherIsWatchingYou;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class BigBrotherIsWatchingYou extends JavaPlugin implements Listener {
 
     private String webhookUrl;
     private List<String> detectedCommands;
     private List<String> monitoredPlayers;
+    private Set<Player> creativePlayers = new HashSet<>();
 
     @Override
     public void onEnable() {
@@ -52,7 +60,7 @@ public final class BigBrotherIsWatchingYou extends JavaPlugin implements Listene
         String command = event.getMessage().split(" ")[0].substring(1); // Remove leading '/'
 
         if (monitoredPlayers.contains(playerName) && detectedCommands.contains(command)) {
-            String message = playerName + " issued command: " + event.getMessage();
+            String message = playerName + " issued server command: " + event.getMessage();
             sendDiscordMessageAsync(message);
         }
     }
@@ -62,6 +70,22 @@ public final class BigBrotherIsWatchingYou extends JavaPlugin implements Listene
         String command = event.getCommand();
         String message = "Console issued server command: " + command;
         sendDiscordMessageAsync(message);
+    }
+
+    @EventHandler
+    public void onCreativeInventoryClick(InventoryCreativeEvent event) {
+        Player player = (Player) event.getWhoClicked();
+
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            ItemStack item = event.getCursor(); // Get the item being clicked
+
+            if (item != null && item.getType() != Material.AIR) {
+                String itemName = item.getType().name();
+                int itemAmount = item.getAmount();
+                String message = player.getName() + " took " + itemAmount + "x " + itemName + " from Creative inventory";
+                sendDiscordMessageAsync(message);
+            }
+        }
     }
 
     private void sendDiscordMessageAsync(String messageContent) {
@@ -82,7 +106,7 @@ public final class BigBrotherIsWatchingYou extends JavaPlugin implements Listene
 
             // Create an embed object
             JsonObject embed = new JsonObject();
-            embed.addProperty("title", "Command Issued");
+            embed.addProperty("title", "Admin activity detected");
             embed.addProperty("description", messageContent);
             embed.addProperty("color", 15258703); // Embed color in decimal (e.g., light blue)
 
