@@ -2,5 +2,5 @@ name: BigBrotherIsWatchingYou
 version: '1.0-SNAPSHOT'
 main: dev.ua.dannsoll.bigbrotheriswatchingyou.BigBrotherIsWatchingYou
 api-version: '1.21'
-authors: [ Dann_Soll ]
+authors: [ Dann_Soll & ikeepcalm ]
 description: Commands execution logging plugin

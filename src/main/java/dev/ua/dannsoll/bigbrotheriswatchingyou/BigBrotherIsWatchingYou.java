@@ -30,7 +30,7 @@ public final class BigBrotherIsWatchingYou extends JavaPlugin implements Listene
         loadConfig();
         reloadCommand();
         instance = this;
-        commandLogger = new CommandLogger(this.getConfig().getStringList("commands"));
+        commandLogger = new CommandLogger(this.getConfig().getStringList("commands"), this.getConfig().getStringList("players"));
         creativeLogger = new CreativeLogger(this.getConfig().getStringList("players"));
         Bukkit.getPluginManager().registerEvents(creativeLogger, this);
         Bukkit.getPluginManager().registerEvents(commandLogger, this);
@@ -62,6 +62,7 @@ public final class BigBrotherIsWatchingYou extends JavaPlugin implements Listene
                             .executes(ctx -> {
                                 ctx.getSource().getSender().sendMessage(Component.text("Reloading BigBrother config...", NamedTextColor.RED));
                                 commandLogger.updateMonitoredCommands(this.getConfig().getStringList("commands"));
+                                commandLogger.updateMonitoredPlayers(this.getConfig().getStringList("players"));
                                 creativeLogger.updateMonitoredPlayers(this.getConfig().getStringList("players"));
                                 WebhookUtil.sendDiscordMessageAsync("Big Brother config reloaded!");
                                 return Command.SINGLE_SUCCESS;

@@ -7,13 +7,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCreativeEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Map;
 
 public class CreativeLogger implements Listener {
 
@@ -80,9 +79,43 @@ public class CreativeLogger implements Listener {
                         if (item != null) {
                             String itemName = item.getType().name();
                             int itemAmount = item.getAmount();
-                            String message = player.getName() + " moved " + itemAmount + "x " + itemName + " to other container";
+                            String containerType = event.getInventory().getType().name();
+                            String message = player.getName() + " moved " + itemAmount + "x " + itemName + " in " + containerType;
                             WebhookUtil.sendDiscordMessageAsync(message);
                         }
+                    }
+
+                    if (event.getAction() == InventoryAction.CLONE_STACK) {
+                        ItemStack item = event.getCurrentItem();
+                        if (item != null && item.getType() != Material.AIR) {
+                            String itemName = item.getType().name();
+                            int itemAmount = item.getAmount();
+                            String containerType = event.getClickedInventory().getType().name();
+
+                            String message = player.getName() + " cloned " + itemAmount + "x " + itemName +
+                                    " in " + containerType ;
+                            WebhookUtil.sendDiscordMessageAsync(message);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        if (event.getWhoClicked() instanceof Player player) {
+            if (monitoredPlayers.contains(player.getName())) {
+                if (player.getGameMode() == GameMode.CREATIVE) {
+                    ItemStack item = event.getOldCursor();
+                    if (item != null && item.getType() != Material.AIR) {
+                        Map<Integer, ItemStack> newItems = event.getNewItems();
+                        int itemAmount = newItems.values().stream().mapToInt(ItemStack::getAmount).sum();
+
+                        String itemName = item.getType().name();
+                        String containerType = event.getInventory().getType().name();
+                        String message = player.getName() + " moved " + itemAmount + "x " + itemName +
+                                " in " + containerType;
+                        WebhookUtil.sendDiscordMessageAsync(message);
                     }
                 }
             }

@@ -14,20 +14,26 @@ import java.util.List;
 public class CommandLogger implements Listener {
 
     private List<String> notMonitoredCommands;
+    private List<String> monitoredPlayers;
 
-    public CommandLogger(List<String> notMonitoredCommands) {
+    public CommandLogger(List<String> notMonitoredCommands, List<String> monitoredPlayers) {
         this.notMonitoredCommands = notMonitoredCommands;
+        this.monitoredPlayers = monitoredPlayers;
     }
 
     public void updateMonitoredCommands(List<String> monitoredCommands) {
         this.notMonitoredCommands = monitoredCommands;
     }
 
+    public void updateMonitoredPlayers(List<String> monitoredPlayers) {
+        this.monitoredPlayers = monitoredPlayers;
+    }
+
     @EventHandler
     public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
         String playerName = event.getPlayer().getName();
         String command = event.getMessage().split(" ")[0].toLowerCase().replace("/", "");
-        if (!notMonitoredCommands.contains(command)) {
+        if (monitoredPlayers.contains(playerName) && !notMonitoredCommands.contains(command)) {
             WebhookUtil.sendDiscordMessageAsync(playerName + " issued server command: `" + event.getMessage() + "`");
         }
     }
